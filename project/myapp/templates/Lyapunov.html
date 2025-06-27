@@ -1,0 +1,39 @@
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyapunov Graph</title>
+    <style rel="stylesheet">
+        .container {
+            text-align: center;
+            max-width: 850px;
+            padding: 10px 30px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            margin: auto;
+            margin-top: 50px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+    </style>
+</head>
+<body>
+    {% include 'Headers.html' %}
+    <div class="container">
+        <h1 style="text-align:center;">Lyapunov Graph</h1>
+        <div style="display: flex; justify-content: center;">
+            <img src="{% static plot_url %}" alt="Lyapunov Graph" style="border:5px solid black; max-width:100%;">
+        </div>
+    </div>
+</body>
+</html>
