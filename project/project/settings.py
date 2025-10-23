@@ -86,7 +86,7 @@ DATABASES = {
         'USER': 'root',
         'PASSWORD': '',
         'HOST': '127.0.0.1',
-        'PORT': '4306',
+        'PORT': '3306',
         'OPTIONS': {
             'ssl': {'ssl_disabled': True},  # Disable SSL verification
             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
