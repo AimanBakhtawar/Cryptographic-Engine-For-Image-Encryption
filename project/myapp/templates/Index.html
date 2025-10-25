@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptography Engine</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style rel="stylesheet">
+        .container {
+            text-align: center;
+            max-width: 850px;
+            margin: auto;
+            padding: 50px 30px;
+            background: rgba(0, 0, 0, 0.6); /* Deep dark blue transparent */
+            border-radius: 15px;
+            margin-top: 80px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        p {
+            font-size: 19px;
+            color: white; /* Cyan blue, readable & modern */
+            margin-bottom: 30px;
+        }
+
+        .features {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-box {
+            background-color: rgba(255, 255, 255, 0.08);
+            padding: 20px;
+            border-radius: 12px;
+            flex: 1 1 200px;
+            color: #1a9b9b; /* Light mint green */
+            font-size: 17px;
+            font-weight: bold;
+            transition: transform 0.3s;
+            box-shadow: 0 0 5px rgba(133, 242, 201, 0.2);
+        }
+
+        .feature-box:hover {
+            transform: translateY(-5px);
+            background-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 0 10px rgba(133, 242, 201, 0.3);
+        }
+    </style>
+</head>
+<body>
+    {% include 'Headers.html' %}
+    <div class="container">
+        <div class="welcome-screen">
+            <h1>Welcome to Cryptographic Engine</h1>
+            <p>Securely perform encryption and decryption to your images using a custom encryption key!</p>
+
+            <div class="features">
+                <div class="feature-box">🔐 Strong Image Encryption</div>
+                <div class="feature-box">🖼️ Multiple Image Format Support</div>
+                <div class="feature-box">🧪 Differential Attack Resistance</div>
+                <div class="feature-box">📊 Histogram & Chaos Analysis</div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

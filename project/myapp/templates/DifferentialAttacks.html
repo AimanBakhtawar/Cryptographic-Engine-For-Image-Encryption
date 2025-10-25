@@ -1,0 +1,202 @@
+{% load static %}
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Differential Attack</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .container {
+            text-align: center;
+            max-width: 850px;
+            padding: 50px 30px;
+            background: rgba(0, 0, 0, 0.6); /* Deep dark blue transparent */
+            border-radius: 15px;
+            margin-top: 80px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: #ffffff;
+        }
+
+        h3 {
+            color: white;
+            margin-top: 30px;
+        }
+
+        .button {
+            padding: 15px 15px;
+            margin: 5px;
+            background-color: #24c3c395;
+            border: none;
+            color: #ffffff;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .button:hover {
+            background-color: #008c9e1c;
+            border: 1px solid rgb(253, 249, 249);
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            border: none;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .encrypted-result-div {
+            margin-top: 20px;
+            height: 30vh;
+            padding: 20px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 2px solid #1fa5a5dc;
+            border-radius: 8px;
+            overflow-y: auto;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .loading-message {
+            display: none;
+            margin-top: 10px;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        .spinner {
+            margin: 10px auto;
+            width: 30px;
+            height: 30px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .attack-percentage-container {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            display: inline-block;
+            color: #ffffff;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    {% include 'Headers.html' %}
+    <div class="container">
+        <h1>Differential Attack</h1>
+        <div class="encrypted-result-div">
+            <img src="data:image/png;base64,{{ original_image }}" alt="Encrypted Image">
+        </div>
+
+        <div style="white-space: nowrap; width: 100%; overflow: hidden;">
+            <strong style="color:white; margin-right: 10px; display: inline-block;">Choose Attack:</strong>
+            <select id="attackType" style="width: 78%; max-width: 100%; box-sizing: border-box;">
+                <option value="npcr">NPCR</option>
+                <option value="uaci">UACI</option>
+                <option value="baci">BACI</option>
+            </select>
+        </div><br/>    
+    
+        <button class="button" id="attackBtn" onclick="applyAttack()">Apply Attack</button>
+
+        <!-- Loading Spinner and Text -->
+        <div id="loading" class="loading-message">
+            <div class="spinner"></div>
+            Applying attack, please wait...
+        </div>
+
+        <div>
+            <!-- Attacked image -->
+        <div id="attack-result" style="display: none;">
+            <h3>Attacked Image:</h3>
+            <img id="attackedImage" alt="Attacked Image">
+        </div>
+
+        <!-- Attack percentage -->
+        <div id="attack-percentage-result" style="display: none;">
+            <div class="attack-percentage-container">
+                Attack Result: <span id="attack-result-percentage"></span>
+            </div>
+        </div>
+        </div>
+
+    </div>
+
+    <script>
+        function applyAttack() {
+            let attackType = document.getElementById("attackType").value;
+            let imageId = "{{ image.id }}";
+
+            let button = document.getElementById("attackBtn");
+            let loadingDiv = document.getElementById("loading");
+
+            // Disable button and show loading
+            button.disabled = true;
+            loadingDiv.style.display = "block";
+
+            fetch(`/differentialAttacks/${imageId}/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    attack_type: attackType,
+                    image_id: imageId,
+                    secret_key: "{{ image.key }}"
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                button.disabled = false;
+                loadingDiv.style.display = "none";
+
+                if (data.attacked_image_url) {
+                    document.getElementById("attackedImage").src = "data:image/png;base64," + data.attacked_image_url;
+                    document.getElementById("attack-result").style.display = "block";
+
+                    if (data.attack_result !== undefined && data.attack_result !== null) {
+                        document.getElementById("attack-percentage-result").style.display = "block";
+                        document.getElementById("attack-result-percentage").textContent = `${parseFloat(data.attack_result).toFixed(4)}%`;
+                    }
+                } else {
+                    alert("Error applying attack.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                button.disabled = false;
+                loadingDiv.style.display = "none";
+                alert("Something went wrong.");
+            });
+        }
+    </script>
+</body>
+</html>

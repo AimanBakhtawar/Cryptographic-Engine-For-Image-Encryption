@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encrypted Images</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Styling remains same as your provided CSS */
+        .container {
+            text-align: center;
+            max-width: 80%;
+            padding: 50px 30px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 15px;
+            margin-top: 80px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+        }
+        h1 { font-size: 36px; margin-bottom: 15px; color: #ffffff; }
+        .table-responsive { max-height: 500px; overflow-y: auto; }
+        .image-table { width: 100%; border-collapse: collapse; }
+        .image-table th, .image-table td {
+            padding: 15px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.3); vertical-align: middle;
+        }
+        .image-table th { background: rgba(255, 255, 255, 0.2); position: sticky; top: 0; }
+        .image-pair { display: flex; flex-direction: row; justify-content: center; align-items: center; gap: 20px; }
+        .encrypted-image, .image-card img, .decrypted-image {
+            width: 200px; height: 200px; object-fit: fill; border-radius: 8px; box-shadow: 0px 4px 8px rgba(0,0,0,0.5);
+        }
+        .button {
+            padding: 8px 15px; margin: 5px; background-color: #24c3c395;
+            border: none; color: #ffffff; border-radius: 5px; font-weight: bold;
+            cursor: pointer; transition: background-color 0.3s ease;
+        }
+        .otp-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .otp-input-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .otp-input {
+            width: 120px;
+            height: 40px;
+            border-radius: 8px;
+            padding-left: 30px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            text-align: center;
+        }
+        .otp-input::placeholder {
+            color: #ccc;
+        }
+        .otp-icon {
+            position: absolute;
+            margin-left: 10px;
+            color: white;
+        }
+        .button, .action-btn {
+            padding: 8px 15px; margin: 5px; background-color: #24c3c395;
+            border: none; color: #ffffff; border-radius: 5px; font-weight: bold;
+            cursor: pointer; transition: background-color 0.3s ease;
+        }
+        .modal-content {
+            background: #1b1b1b;
+            color: white;
+        }
+        .button:hover { background-color: #008c9e1c; border: 1px solid white; }
+        .decrypted-image-container { display: none; transition: all 0.3s ease-in-out; }
+        .share-icon:hover { color: #ffffff; }
+    </style>
+</head>
+<body>    
+{% include 'Headers.html' %}
+<div class="container">
+    <h1>Encrypted Images</h1>
+    <div class="table-responsive">
+        <table class="image-table">
+            <thead>
+                <tr>
+                    <th>Encrypted & Decrypted Image</th>
+                    <th>OTP Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for image in encrypted_images %}
+                <tr class="main-row" data-image-id="{{ image.id }}">
+                    <td>
+                        <div class="image-pair">
+                            {% if image.encrypted_image and image.encrypted_image.name %}
+                                <img src="{{ image.encrypted_image.url }}" alt="Encrypted Image" class="encrypted-image">
+                                <div class="decrypted-image-container">
+                                    <img src="" class="decrypted-image" alt="Decrypted Image">
+                                </div>
+                            {% else %}
+                                <p>No encrypted image available</p>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td>
+                        {% if image.otp_verified %}
+                            ✅ Verified
+                        {% else %}
+                            <div class="otp-card">
+                                <div class="position-relative otp-input-group">
+                                    <i class="fas fa-key otp-icon"></i>
+                                    <input type="text" class="otp-input" placeholder="Enter OTP" maxlength="6">
+                                    <button class="button verify-otp-btn" data-id="{{ image.id }}">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <button class="action-btn send-otp-btn" data-id="{{ image.id }}">
+                                    <i class="fas fa-envelope"></i> Send OTP
+                                </button>
+                            </div>
+                        {% endif %}
+                    </td>                                                       
+
+                    <td>
+                        {% if image.encrypted_image and image.encrypted_image.name %}
+                            <button class="button decrypt-btn" data-id="{{ image.id }}" data-key="{{ image.key }}">
+                                <span class="btn-text">Decrypt Image</span>
+                            </button>
+                            <button class="button histogram-btn" data-id="{{ image.id }}"
+                                {% if not image.otp_verified %}disabled style="opacity: 0.6; cursor: not-allowed;"{% endif %}>
+                                <span class="btn-text">Show Histogram</span>
+                            </button>
+
+                            <a href="{% url 'differentialAttacks' image.id %}">
+                                <button class="button attack-btn" data-id="{{ image.id }}"
+                                    {% if not image.otp_verified %}disabled style="opacity: 0.6; cursor: not-allowed;"{% endif %}>
+                                    Apply Attack
+                                </button>
+                            </a>
+                        {% else %}
+                            <button class="button" disabled>Decrypt</button>
+                            <button class="button" disabled>Show Histogram</button>
+                            <button class="button" disabled>Apply Attack</button>
+                        {% endif %}
+                        <i class="fas fa-paper-plane share-icon" 
+                           title="Share Encrypted Image & Key"
+                           data-image-url="{{ image.encrypted_image.url }}" 
+                           data-key="{{ image.key }}"
+                           style="margin-left: 10px; cursor: pointer; color: #1fa5a5dc; font-size: 20px;">
+                        </i>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // Send OTP Button Click
+    document.querySelectorAll(".send-otp-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const imageId = this.getAttribute("data-id");
+            const btn = this;
+            const originalHTML = btn.innerHTML;
+
+            // Add spinner
+            btn.disabled = true;
+            btn.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Sending...`;
+
+            fetch("{% url 'send_otp' %}", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}',
+                },
+                body: JSON.stringify({ image_id: imageId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            })
+            .catch(error => {
+                console.error("Error sending OTP:", error);
+                alert("Failed to send OTP. Please try again.");
+                btn.disabled = false;
+                btn.innerHTML = originalHTML;
+            });
+        });
+    });
+
+
+    // Verify OTP Button Click
+    document.querySelectorAll(".verify-otp-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const imageId = this.getAttribute("data-id");
+            const mainRow = this.closest("tr");
+            const otpInput = mainRow.querySelector(".otp-input");
+
+            const otpValue = otpInput.value.trim();
+
+            if (!otpValue || otpValue.length !== 6) {
+                alert("Please enter a valid 6-digit OTP.");
+                return;
+            }
+
+            fetch("{% url 'verify_otp' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ image_id: imageId, otp: otpValue })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    alert(data.message);
+
+                    // Update OTP Status text
+                    const otpStatusCell = mainRow.querySelector("td:nth-child(2)");
+                    otpStatusCell.innerHTML = "✅ Verified";
+
+                    // Enable Decrypt button
+                    const decryptBtn = mainRow.querySelector(".decrypt-btn");
+                    if (decryptBtn) decryptBtn.disabled = false;
+
+                    // ✅ Enable Histogram button
+                    const histogramBtn = mainRow.querySelector(".histogram-btn");
+                    if (histogramBtn) {
+                        histogramBtn.disabled = false;
+                        histogramBtn.style.opacity = "1";
+                        histogramBtn.style.cursor = "pointer";
+                    }
+
+                    // ✅ Enable Attack button
+                    const attackBtn = mainRow.querySelector(".attack-btn");
+                    if (attackBtn) {
+                        attackBtn.disabled = false;
+                        attackBtn.style.opacity = "1";
+                        attackBtn.style.cursor = "pointer";
+                    }
+
+                } else {
+                    alert(data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Error verifying OTP:", error);
+                alert("OTP Verification failed. Please try again.");
+            });
+        });
+    });
+
+    // Decryption Button Click
+    document.querySelectorAll(".decrypt-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const imageId = this.getAttribute("data-id");
+            const key = this.getAttribute("data-key");
+            const btnText = this.querySelector(".btn-text");
+
+            if (!imageId || !key) {
+                alert("Missing image ID or key!");
+                return;
+            }
+
+            this.disabled = true;
+            btnText.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Decrypting...`;
+
+            fetch("{% url 'decryption' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ image_id: imageId, secret_key: key })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    const mainRow = document.querySelector(`tr[data-image-id='${imageId}']`);
+                    const decryptedContainer = mainRow.querySelector(".decrypted-image-container");
+                    const decryptedImage = decryptedContainer.querySelector("img");
+
+                    decryptedImage.src = data.decrypted_image_url;
+                    decryptedContainer.style.display = "block";
+                } else {
+                    alert("Decryption failed: " + data.error);
+                }
+                this.disabled = false;
+                btnText.textContent = "Decrypt Image";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                this.disabled = false;
+                btnText.textContent = "Decrypt Image";
+            });
+        });
+    });
+
+
+    // Show Histogram Button Click
+    document.querySelectorAll(".histogram-btn").forEach(button => {
+        button.addEventListener("click", function () {
+            const imageId = this.getAttribute("data-id");
+            const btnText = this.querySelector(".btn-text");
+
+            if (!imageId) {
+                alert("Missing image ID!");
+                return;
+            }
+
+            this.disabled = true;
+            btnText.innerHTML = `<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Generating...`;
+
+            fetch("{% url 'show_histogram' %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ image_id: imageId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "success") {
+                    window.open(data.histogram_url, "_blank");
+                } else {
+                    alert("Histogram generation failed: " + data.error);
+                }
+                this.disabled = false;
+                btnText.textContent = "Show Histogram";
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                this.disabled = false;
+                btnText.textContent = "Show Histogram";
+            });
+        });
+    });
+
+    // Share Icon Click
+    document.querySelectorAll(".share-icon").forEach(icon => {
+        icon.addEventListener("click", function () {
+            const imageUrl = this.getAttribute("data-image-url");
+            const key = this.getAttribute("data-key");
+
+            const fullImageUrl = window.location.origin + imageUrl;
+            const shareMessage = `🔐 Encrypted Image Link:\n${fullImageUrl}\n\n🔑 Secret Key:\n${key}`;
+
+            const shareData = { title: "Encrypted Image", text: shareMessage };
+
+            if (navigator.share) {
+                navigator.share(shareData)
+                    .then(() => console.log("Successfully shared!"))
+                    .catch(err => console.error("Sharing error:", err));
+            } else {
+                alert("Sharing not supported. Please copy manually.");
+            }
+        });
+    });
+</script>
+</body>
+</html>
