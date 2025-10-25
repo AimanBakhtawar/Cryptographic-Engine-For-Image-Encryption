@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from django.shortcuts import render, HttpResponse, redirect
+=======
+from django.shortcuts import render, redirect
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
 import string, secrets, json, re, os, io, base64, cv2, random, traceback, time, hashlib
 from django.http import JsonResponse
 from django.core.mail import send_mail
@@ -29,7 +33,11 @@ def is_strong_password(password):
         re.search(r'[A-Z]', password) and
         re.search(r'[a-z]', password) and
         re.search(r'[0-9]', password) and
+<<<<<<< HEAD
         re.search(r'[\W_]', password)  # special characters
+=======
+        re.search(r'[\W_]', password)
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     )
 
 # Registration Page
@@ -82,7 +90,11 @@ def generate_key(request):
 
 # Check Key Strength
 def is_key_strong(key):
+<<<<<<< HEAD
     start = time.time()
+=======
+    # start = time.time()
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     result = all([
         len(key) >= 10,
         re.search(r'[A-Z]', key),
@@ -90,15 +102,26 @@ def is_key_strong(key):
         re.search(r'[0-9]', key),
         re.search(r'[\W_]', key)
     ])
+<<<<<<< HEAD
     print(f"[DEBUG] is_key_strong() took {time.time() - start:.4f} seconds")
+=======
+    # print(f"[DEBUG] is_key_strong() took {time.time() - start:.4f} seconds")
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     return result
 
 # Calculate Key Space
 def calculate_key_space(key_length):
+<<<<<<< HEAD
     start = time.time()
     character_set_size = len(string.ascii_letters + string.digits + string.punctuation)
     result = character_set_size ** key_length
     print(f"[DEBUG] calculate_key_space() took {time.time() - start:.4f} seconds")
+=======
+    # start = time.time()
+    character_set_size = len(string.ascii_letters + string.digits + string.punctuation)
+    result = character_set_size ** key_length
+    # print(f"[DEBUG] calculate_key_space() took {time.time() - start:.4f} seconds")
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     return result
 
 # Split into blocks
@@ -120,7 +143,11 @@ def split_into_blocks(image, block_size):
 
 # Arnold Cat Map - Encryption
 def generate_chaotic_sequence(image, iterations):
+<<<<<<< HEAD
     start = time.time()
+=======
+    # start = time.time()
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     h, w, c = image.shape
     if h != w:
         raise ValueError("Arnold Cat Map only works for square matrices!")
@@ -134,7 +161,11 @@ def generate_chaotic_sequence(image, iterations):
         new_y = (x + 2 * y) % N
         transformed_image = transformed_image[new_x, new_y]
 
+<<<<<<< HEAD
     print(f"[DEBUG] generate_chaotic_sequence() took {time.time() - start:.4f} seconds")
+=======
+    # print(f"[DEBUG] generate_chaotic_sequence() took {time.time() - start:.4f} seconds")
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     return transformed_image
 
 # Merge blocks
@@ -146,7 +177,11 @@ def merge_blocks(blocks, image_shape):
 
 # Pixel Shuffle (Encryption)
 def shuffle_pixels(image, key_value):
+<<<<<<< HEAD
     start = time.time()
+=======
+    # start = time.time()
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     height, width, channels = image.shape
     total_pixels = height * width
 
@@ -158,7 +193,11 @@ def shuffle_pixels(image, key_value):
     shuffled_pixels = flat_pixels[indices]
 
     result = shuffled_pixels.reshape(image.shape)
+<<<<<<< HEAD
     print(f"[DEBUG] shuffle_pixels() took {time.time() - start:.4f} seconds")
+=======
+    # print(f"[DEBUG] shuffle_pixels() took {time.time() - start:.4f} seconds")
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     return result, indices
 
 # Pixel Value Modifier
@@ -175,12 +214,15 @@ def modify_pixel_values(image, key_value):
     print(f"[DEBUG] modify_pixel_values() took {time.time() - start:.4f} seconds")
     return result
 
+<<<<<<< HEAD
 def merge_blocks(blocks, image_shape):
     reconstructed = np.zeros(image_shape, dtype=np.uint8)
     for (i, j), block in blocks:
         reconstructed[i:i+block.shape[0], j:j+block.shape[1], :] = block
     return reconstructed
 
+=======
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
 # Encrypt Image Function
 def encrypt_image(image_array, key):
     start_time = time.time()
@@ -188,7 +230,11 @@ def encrypt_image(image_array, key):
     key_value = (sum(ord(char) for char in key) * 2)
     key_value = key_value % 100  # keep iterations reasonable
 
+<<<<<<< HEAD
     block_size = 64  # You can change this as needed
+=======
+    block_size = 64
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     blocks, padded_shape = split_into_blocks(image_array, block_size)
 
     encrypted_blocks = []
@@ -668,7 +714,11 @@ def generate_bifurcation_graph(image_path, base_key, output_path):
     plt.scatter(r_values, pixel_values, s=0.5, color='blue')
     plt.title("Bifurcation Graph")
     plt.xlabel("Key Perturbation (r)")
+<<<<<<< HEAD
     plt.ylabel("Pixel Intensity at (100,100)")
+=======
+    plt.ylabel("Pixel Intensity at (100, 100)")
+>>>>>>> ca9fa2836325ae15dd8282f30e07faf6cdef40d1
     plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout()
     plt.savefig(output_path)
