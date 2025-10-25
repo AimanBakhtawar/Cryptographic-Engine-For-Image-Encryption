@@ -1,12 +1,14 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Header</title>
     <style>
-        body, html {
+        body,
+        html {
             font-family: 'Segoe UI', sans-serif;
             height: 100vh;
             margin: 0;
@@ -24,12 +26,13 @@
             right: 0;
             width: 100%;
             height: 80px;
-            background-color: rgba(0, 0, 0, 0.8); /* dark transparent */
+            background-color: rgba(0, 0, 0, 0.8);
+            /* dark transparent */
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.6);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
         }
 
         .navbar a {
@@ -55,40 +58,41 @@
 
         .navbar .logout-btn {
             padding: 10px 30px;
-            margin-left: 320px;
             background-color: #1fa5a5dc;
             border: none;
             color: #ffffff;
             border-radius: 5px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s ease; 
+            transition: background-color 0.3s ease;
         }
 
-        .logout-btn:hover{
+        .logout-btn:hover {
             background-color: #008c9e1c;
-            border: 1px solid rgb(253, 249, 249); 
+            border: 1px solid rgb(253, 249, 249);
         }
-        
+
         .navbar-spacer {
             height: 60px;
         }
-
-        
     </style>
 </head>
+
 <body>
     <!-- Navbar -->
     <div class="navbar">
         <a href="{% url 'index' %}" class="{% if request.path == '/index/' %}active{% endif %}">Home</a>
         <a href="{% url 'encrypt' %}" class="{% if request.path == '/encrypt/' %}active{% endif %}">Encryption</a>
         <a href="{% url 'decrypt' %}" class="{% if request.path == '/decrypt/' %}active{% endif %}">Decryption</a>
-        <a href="{% url 'encryptedImages' %}" class="{% if request.path == '/encryptedImages/' %}active{% endif %}">Encrypted Images</a>
+        <a href="{% url 'encryptedImages' %}"
+            class="{% if request.path == '/encryptedImages/' %}active{% endif %}">Encrypted Images</a>
         <a href="{% url 'lyapunov' %}" class="{% if request.path == '/lyapunov/' %}active{% endif %}">Lyapunov Graph</a>
-        <a href="{% url 'bifurcation' %}" class="{% if request.path == '/bifurcation/' %}active{% endif %}">Bifurcation Graph</a>
+        <a href="{% url 'bifurcation' %}" class="{% if request.path == '/bifurcation/' %}active{% endif %}">Bifurcation
+            Graph</a>
         <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
     </div>
 
     <div class="navbar-spacer"></div>
 </body>
+
 </html>
